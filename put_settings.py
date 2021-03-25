@@ -43,6 +43,7 @@ for org in orgs:
     for integration in org['integrations']:
         int_id = integration['id']
         name = integration['name']
+        # this check is technically redundant, but want to make sure before we update anything
         if name == int_name:
             callurl = f'org/{org_id}/integrations/{int_id}/settings'
             notice = f'updating {name} integration for org {org_name}'
@@ -53,3 +54,4 @@ for org in orgs:
             else:
                 print(f'{org_name} failed to have setting changed, error {resp.status_code}')
        
+print('done')

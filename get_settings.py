@@ -23,7 +23,7 @@ def jopen(filename):
 snyktoken = os.environ['SNYK_TOKEN']
 snykgroup = os.environ['SNYK_GROUP']
 
-orgfile = sys.argv[1]
+org_dir = 'org_cache'
 
 client = snyk.SnykClient(snyktoken)
 
@@ -42,18 +42,19 @@ org_ids: list = []
 def get_int_settings(org_id,integrations,client):
     int_set= []
     for k,v in integrations.items():
-        print(f'getting settings for {k}')
+        # print(f'getting settings for {k}')
         tmp_dict = {}
         tmp_dict['id'] = v
         urlcall = f'org/{org_id}/integrations/{v}/settings'
         resp = client.get(urlcall)
         settings = json.loads(resp.text)
         tmp_dict['settings'] = settings
-        tmp_dict['name'] = k
+        tmp_dict['name'] = k.lower()
         int_set.append(tmp_dict)
     return int_set
 
-# get integration IDs
+# get integration IDs for each org
+# write each orgs information to it's own file
 def get_org_integrations(orgs, client):
     for org in orgs:
         id = org['id']
@@ -64,14 +65,14 @@ def get_org_integrations(orgs, client):
         integrations = json.loads(resp.text)
         integrations = get_int_settings(id,integrations,client)
         org['integrations'] = integrations
-        slug = org['slug']
-        fname = f'org_cache/{slug}.json'
-        jwrite(org,fname)
+        slug = org['slug'].replace('.','')
+        fname = f'{org_dir}/{slug}.json'
+        print(f'writing settings to {fname}')
+        #jwrite(org,fname)
     return orgs
 
 print('retrieving org settings')
-orgs = get_org_integrations(orgs,client)
 
-print(f'writing org list with settings to {orgfile}')
-jwrite(orgs,orgfile)
+get_org_integrations(orgs,client)
+
 print('done')
