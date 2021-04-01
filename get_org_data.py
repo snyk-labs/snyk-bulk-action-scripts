@@ -55,7 +55,7 @@ def get_int_settings(org_id,integrations,client):
 
 # get integration IDs for each org
 # write each orgs information to it's own file
-def get_org_integrations(orgs, client):
+def get_org_data(orgs, client):
     for org in orgs:
         id = org['id']
         name = org['name']
@@ -65,14 +65,21 @@ def get_org_integrations(orgs, client):
         integrations = json.loads(resp.text)
         integrations = get_int_settings(id,integrations,client)
         org['integrations'] = integrations
+        projurl = f'org/{id}/projects'
+
+        print(f'getting list of projects in {name}')
+        resp_proj = client.get(projurl)
+        projects = json.loads(resp_proj.text)
+        org['projects'] = projects['projects']
+        
         slug = org['slug'].replace('.','')
         fname = f'{org_dir}/{slug}.json'
-        print(f'writing settings to {fname}')
-        #jwrite(org,fname)
+        print(f'writing data to {fname}')
+        jwrite(org,fname)
     return orgs
 
 print('retrieving org settings')
 
-get_org_integrations(orgs,client)
+get_org_data(orgs,client)
 
 print('done')

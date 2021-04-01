@@ -12,7 +12,7 @@ Ensure you have "SNYK_TOKEN" and "SNYK_GROUP" environment variables set.
 
 Because this is a bulk action that can change hundreds of organizations, there is a sequence of steps to follow. This is both to make the process fast and to minimize the chances of unintended changes.
 
-1) `get_settings.py` gets every organization in a group and then for the integration settings for each organization. Each organization is saved in a separate file as `org_cache/$organization.json`
+1) `get_org_data.py` gets every organization in a group and then for the integration settings for each organization, along with each project. Each organization is saved in a separate file as `org_cache/$organization.json`
 2) `filter_orgs.py` takes the folder of organizations created by `get_settings.py` and runs a filter of integration, setting name, and setting value and outputs an array of the organizations matching that filter
 3) `put_settings.py` take an array of organizations and the desired integration setting and applies it to each organization
 
@@ -32,7 +32,7 @@ If `SNYK_TOKEN` and `SNYK_GROUP` are set correctly, run `python3 get_settings.py
 
 example:
 ```
-❯ python3 get_settings.py
+❯ python3 get_org_data.py
 retrieving list of organizations
 retrieving org settings
 getting list of integrations in Test Organization
